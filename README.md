@@ -4,199 +4,181 @@
 
 The secure way to share secrets at hackathons. Fast, ephemeral, encrypted secret sharing designed for teams that move fast.
 
-## 🎯 Project Status
-
-This is a **functional MVP demonstration** with mock data. The UI is fully implemented and showcases the complete user experience. Backend integration with WorkOS AuthKit and Vault is ready to be connected once credentials are provided.
-
-### ✅ What's Working
-
-- **Landing page** - Brand messaging and feature highlights
-- **Dashboard** - View your rooms with expiration timers
-- **Join room flow** - Enter invite codes to access rooms
-- **Room secrets view** - Browse secrets with masked values, tags, and copy functionality
-- **Add secret modal** - UI for adding new secrets
-- **Real-time updates ready** - Convex schema and queries configured
-- **Responsive design** - Mobile-friendly dark theme with envpass branding
-
-### 🚧 What Needs Backend Integration
-
-- WorkOS AuthKit authentication
-- WorkOS Vault secret encryption/decryption
-- Convex backend deployment
-- API routes for CRUD operations
-- Actual secret copying (currently mocked)
-- Room creation and management
-- Member management
-- Audit logging
-
 ## Features
 
-- 🔒 **Encrypted** - WorkOS Vault encryption with unique keys per secret. Zero plaintext at rest.
-- ⚡ **Ephemeral** - Rooms auto-expire after 72 hours. Secrets self-destruct. Nothing permanent.
-- 🚀 **Real-time** - Live updates across your team. No refresh needed. Just works.
-- 📋 **Copy, don't display** - Secret values are masked by default. Click to copy to clipboard.
-- 📊 **Audit trail** - Every secret access is logged with timestamp, user, and action.
+- **Encrypted** - WorkOS Vault encryption with unique keys per secret. Zero plaintext at rest.
+- **Ephemeral** - Rooms auto-expire (24h to 1 week). Secrets self-destruct. Nothing permanent.
+- **Real-time** - Live updates across your team via Convex. No refresh needed.
+- **Authenticated** - WorkOS AuthKit sign-in required. No anonymous access.
+- **Audit trail** - Every secret access logged with timestamp, user, and action.
+- **Copy, don't display** - Secret values masked by default. Click to copy to clipboard.
 
 ## Tech Stack
 
-- **Framework:** Next.js 15 (App Router)
+- **Framework:** Next.js 16 (App Router)
 - **Language:** TypeScript
 - **Styling:** Tailwind CSS v4
-- **Auth:** WorkOS AuthKit (ready to integrate)
-- **Secret Storage:** WorkOS Vault (ready to integrate)
-- **Database:** Convex (real-time reactive database)
+- **Auth:** WorkOS AuthKit
+- **Secret Storage:** WorkOS Vault (HSM-backed envelope encryption)
+- **Database:** Convex (real-time reactive)
+- **Package Manager:** Bun
 - **Hosting:** Vercel + Convex Cloud
 
 ## Getting Started
 
 ### Prerequisites
 
-- Node.js 18+ and npm
-- WorkOS account (for AuthKit and Vault) - _optional for local development_
-- Convex account - _optional for local development_
+- Bun (or Node.js 18+)
+- WorkOS account (AuthKit + Vault credentials)
+- Convex account
 
 ### Installation
 
-1. Clone the repository:
 ```bash
 git clone https://github.com/Lemirq/envpass.git
 cd envpass
+bun install
 ```
 
-2. Install dependencies:
+### Environment Variables
+
+Create `.env.local` with:
+
+```env
+# Convex
+CONVEX_DEPLOYMENT=dev:your-deployment
+NEXT_PUBLIC_CONVEX_URL=https://your-deployment.convex.cloud
+NEXT_PUBLIC_CONVEX_SITE_URL=https://your-deployment.convex.site
+
+# WorkOS
+WORKOS_CLIENT_ID=client_...
+WORKOS_API_KEY=sk_test_...
+WORKOS_COOKIE_PASSWORD=<64-char hex string>
+NEXT_PUBLIC_WORKOS_REDIRECT_URI=http://localhost:3000/api/auth/callback
+
+# Next.js
+NEXT_PUBLIC_APP_URL=http://localhost:3000
+```
+
+### Development
+
 ```bash
-npm install
+# Start Convex dev server
+npx convex dev
+
+# Start Next.js dev server
+bun dev
 ```
 
-3. Set up environment variables (optional for local dev with mocks):
-```bash
-cp .env.example .env.local
-```
-
-Fill in your WorkOS and Convex credentials in `.env.local` if you want to test with real backends.
-
-4. Run the development server:
-```bash
-npm run dev
-```
-
-Open [http://localhost:3000](http://localhost:3000) to see the app.
-
-### Build for Production
-
-```bash
-npm run build
-npm start
-```
+Open [http://localhost:3000](http://localhost:3000).
 
 ## Project Structure
 
 ```
 envpass/
-├── convex/              # Convex backend (queries, mutations, schema)
-│   ├── schema.ts        # Database schema
-│   ├── rooms.ts         # Room operations
-│   ├── secrets.ts       # Secret operations
-│   ├── memberships.ts   # Member management
-│   ├── auditLogs.ts     # Audit logging
-│   ├── cleanup.ts       # Expiration cleanup
-│   └── crons.ts         # Scheduled jobs
+├── convex/                          # Convex backend
+│   ├── schema.ts                    # Database schema
+│   ├── rooms.ts                     # Room CRUD
+│   ├── secrets.ts                   # Secret operations (Vault integration)
+│   ├── memberships.ts               # Member management
+│   ├── auditLogs.ts                 # Audit logging
+│   ├── users.ts                     # User management
+│   ├── cleanup.ts                   # Expiration cleanup
+│   └── crons.ts                     # Scheduled jobs
 ├── src/
-│   ├── app/             # Next.js app router pages
-│   │   ├── page.tsx            # Landing page
-│   │   ├── dashboard/page.tsx  # User dashboard
-│   │   ├── join/page.tsx       # Join room flow
-│   │   └── room/[roomId]/      # Room pages
-│   │       └── page.tsx        # Room secrets view
-│   └── lib/             # Utilities
-│       ├── utils.ts              # Helper functions
-│       └── convex-provider.tsx   # Convex client setup
-└── public/              # Static assets
+│   ├── middleware.ts                 # WorkOS auth middleware
+│   ├── app/
+│   │   ├── layout.tsx               # Root layout (bare)
+│   │   ├── page.tsx                 # Landing page (public)
+│   │   ├── globals.css              # CSS variables + Tailwind config
+│   │   └── (authenticated)/         # Protected route group
+│   │       ├── layout.tsx           # AuthKit + Convex providers
+│   │       ├── dashboard/page.tsx   # Room list dashboard
+│   │       ├── join/page.tsx        # Join room by invite code
+│   │       └── room/
+│   │           ├── new/page.tsx     # Create room
+│   │           └── [roomId]/
+│   │               ├── page.tsx     # Room view (secrets + audit sidebar)
+│   │               └── settings/page.tsx  # Room settings
+│   └── lib/
+│       ├── utils.ts                 # Helpers (invite codes, TTL, clipboard)
+│       ├── useCurrentUser.ts        # Auth hook (WorkOS → Convex user)
+│       └── convex-provider.tsx      # Convex client setup
+└── public/                          # Static assets
 ```
 
 ## Design System
 
 ### Colors
 
-The envpass brand uses a terminal-green palette on dark backgrounds:
+Ultra-dark theme with green accent:
 
-| Role | Hex | Usage |
-|------|-----|-------|
-| Primary | `#10B981` | Buttons, links, accents |
-| Primary Dark | `#059669` | Hover states |
-| Background | `#0A0E0F` | Main app background |
-| Surface | `#111819` | Cards, panels |
-| Surface Light | `#1A2324` | Input fields |
-| Border | `#1E2E2F` | Subtle borders |
-| Text Primary | `#E8EEEC` | Main text |
-| Text Secondary | `#6B8A85` | Labels, muted info |
-| Success | `#34D399` | Confirmations |
-| Warning | `#FBBF24` | Expiring soon |
-| Danger | `#EF4444` | Delete, expired |
+| Role | Value | Usage |
+|------|-------|-------|
+| Body BG | `#050505` | Page background |
+| Card BG | `#0a0a0a` | Cards, panels |
+| Border | `#222222` | Subtle borders |
+| Border Highlight | `#333333` | Focus/hover borders |
+| Text Primary | `#ffffff` | Main text |
+| Text Secondary | `#888888` | Labels, muted |
+| Text Dim | `#444444` | Placeholders |
+| Accent Green | `#4ade80` | Active states, TTL, success |
+| Accent Red | `#f87171` | Danger, delete, errors |
 
 ### Typography
 
-- **UI Text:** System fonts (San Francisco, Segoe UI, etc.)
-- **Code/Secrets:** Monospace fonts (Cascadia Code, Menlo, Consolas)
+- **Headings:** Silkscreen (pixel font)
+- **Body:** Inter
+- **Code/Secrets:** JetBrains Mono
 
-## Development Roadmap
+### Button Style
 
-### Phase 1: MVP (Current) ✅
-- [x] Project setup and infrastructure
-- [x] Convex schema and backend functions
-- [x] Landing page with branding
-- [x] Dashboard with room cards
-- [x] Join room flow
-- [x] Room secrets view with copy functionality
-- [x] Add secret modal
-- [x] Responsive design
+Gradient dark buttons with inset shadows, uppercase tracking, and hover translate effects:
+```
+bg-gradient-to-b from-[#2a2a2a] to-[#151515]
+border border-[#444]
+shadow-[inset_0_1px_0_rgba(255,255,255,0.08),0_2px_4px_rgba(0,0,0,0.4)]
+```
 
-### Phase 2: Backend Integration (Next)
-- [ ] WorkOS AuthKit integration
-- [ ] WorkOS Vault integration
-- [ ] API routes for CRUD operations
-- [ ] Connect Convex backend
-- [ ] Real secret encryption/decryption
-- [ ] Room creation flow
-- [ ] Member management
+## Architecture
 
-### Phase 3: Polish
-- [ ] Export as `.env` file
-- [ ] Per-secret TTL
-- [ ] Secret tags and filtering
-- [ ] Audit log viewer
-- [ ] Member management UI
-- [ ] Room settings page
-- [ ] Toast notifications
-- [ ] Error boundaries
+### Authentication Flow
 
-### Phase 4: Power Features
-- [ ] CLI tool (`envpass-cli`)
-- [ ] GitHub integration
-- [ ] Secret rotation notifications
-- [ ] Webhooks
-- [ ] Team templates
-- [ ] VS Code extension
+1. Landing page (`/`) is public — no auth required
+2. All other routes are protected by WorkOS AuthKit middleware
+3. Unauthenticated users are redirected to WorkOS sign-in
+4. On callback, session is established and user is synced to Convex
+5. Route groups separate public layout from authenticated layout (with providers)
+
+### Secret Encryption
+
+1. User submits a secret value
+2. Value is encrypted via WorkOS Vault (HSM-backed envelope encryption)
+3. Only the Vault object ID is stored in Convex — never plaintext
+4. On read, the Vault object ID is decrypted server-side and returned
+5. Every read/write is logged in the audit trail
+
+### Room Lifecycle
+
+1. Owner creates a room with a name and expiry (24h–1 week)
+2. A unique invite code is generated for team sharing
+3. Members join via invite code
+4. Secrets are shared within the room
+5. Room and all secrets are permanently deleted on expiry (Convex cron)
 
 ## Security
 
-- **Encryption:** All secrets encrypted via WorkOS Vault with HSM-backed envelope encryption
-- **Access Control:** Role-based permissions (Owner/Member) enforced on every API call
-- **Expiration:** Rooms and secrets auto-expire and are permanently deleted
-- **Audit Logging:** Every secret operation is logged with user, timestamp, and action
-- **Zero Plaintext:** Secret values never stored in database — only encrypted Vault object IDs
-- **Clipboard Auto-Clear:** Copied secrets are automatically cleared from clipboard after 30 seconds
-
-## Contributing
-
-This project was built as a demonstration of secure secret sharing for hackathon teams. Contributions are welcome!
+- **Encryption:** WorkOS Vault with HSM-backed envelope encryption
+- **Auth:** WorkOS AuthKit — no anonymous access to protected routes
+- **Access Control:** Role-based (Owner/Member) enforced on every mutation
+- **Expiration:** Automatic cleanup via Convex cron jobs
+- **Audit Logging:** Every operation logged with user, timestamp, and action
+- **Zero Plaintext:** Only encrypted Vault object IDs stored in database
 
 ## License
 
 MIT
 
 ---
-
-Built with ❤️ for hackathon teams everywhere.
 
 **Stop pasting secrets in Discord. Use envpass.**
