@@ -3,23 +3,56 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { useQuery, useMutation } from "convex/react";
+import { api } from "../../../convex/_generated/api";
+import { useCurrentUser } from "@/lib/useCurrentUser";
+import { ArrowLeft } from "lucide-react";
 
 export default function JoinRoomPage() {
   const [inviteCode, setInviteCode] = useState("");
   const [isJoining, setIsJoining] = useState(false);
+  const [error, setError] = useState("");
   const router = useRouter();
+  const { userId } = useCurrentUser();
+
+  const room = useQuery(
+    api.rooms.getByInviteCode,
+    inviteCode.length === 6 ? { inviteCode } : "skip"
+  );
+
+  const addMember = useMutation(api.memberships.addMember);
 
   const handleJoin = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!inviteCode || inviteCode.length !== 6) return;
+    if (!inviteCode || inviteCode.length !== 6 || !userId) return;
 
     setIsJoining(true);
-    
-    // TODO: Replace with actual API call
-    // For now, just redirect to a mock room
-    setTimeout(() => {
-      router.push(`/room/room1`);
-    }, 1000);
+    setError("");
+
+    try {
+      if (!room) {
+        setError("Room not found. Check the invite code and try again.");
+        setIsJoining(false);
+        return;
+      }
+
+      if (room.expiresAt <= Date.now()) {
+        setError("This room has expired.");
+        setIsJoining(false);
+        return;
+      }
+
+      await addMember({
+        userId,
+        roomId: room._id,
+        role: "MEMBER",
+      });
+
+      router.push(`/room/${room._id}`);
+    } catch {
+      setError("Failed to join room. You may already be a member.");
+      setIsJoining(false);
+    }
   };
 
   return (
@@ -46,7 +79,10 @@ export default function JoinRoomPage() {
                 id="inviteCode"
                 type="text"
                 value={inviteCode}
-                onChange={(e) => setInviteCode(e.target.value.toUpperCase())}
+                onChange={(e) => {
+                  setInviteCode(e.target.value.toUpperCase());
+                  setError("");
+                }}
                 maxLength={6}
                 placeholder="X7K2P9"
                 className="w-full px-4 py-3 bg-[var(--surface-light)] border border-[var(--border)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--primary)] font-mono text-lg text-center tracking-wider"
@@ -55,11 +91,25 @@ export default function JoinRoomPage() {
               <p className="text-xs text-[var(--text-secondary)] mt-2">
                 The code is case-insensitive and contains only letters and numbers
               </p>
+              {inviteCode.length === 6 && room && (
+                <p className="text-xs text-green-400 mt-2">
+                  Found: {room.name}
+                </p>
+              )}
+              {inviteCode.length === 6 && room === null && (
+                <p className="text-xs text-red-400 mt-2">
+                  No room found with this code
+                </p>
+              )}
             </div>
+
+            {error && (
+              <p className="text-sm text-red-400 mb-4">{error}</p>
+            )}
 
             <button
               type="submit"
-              disabled={inviteCode.length !== 6 || isJoining}
+              disabled={inviteCode.length !== 6 || isJoining || !room}
               className="w-full px-6 py-3 bg-[var(--primary)] hover:bg-[var(--primary-dark)] disabled:bg-[var(--surface-light)] disabled:text-[var(--text-secondary)] text-white rounded-lg font-semibold transition-colors"
             >
               {isJoining ? "Joining..." : "Join Room"}
@@ -71,7 +121,7 @@ export default function JoinRoomPage() {
               href="/dashboard"
               className="text-sm text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
             >
-              ← Back to Dashboard
+              <ArrowLeft className="w-4 h-4" /> Back to Dashboard
             </Link>
           </div>
         </div>
@@ -79,7 +129,7 @@ export default function JoinRoomPage() {
         <div className="mt-8 text-center text-sm text-[var(--text-secondary)]">
           <p>Don't have a room yet?</p>
           <Link
-            href="/dashboard"
+            href="/room/new"
             className="text-[var(--primary)] hover:underline"
           >
             Create one now

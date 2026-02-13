@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { ConvexClientProvider } from "@/lib/convex-provider";
+import { AuthKitProvider } from "@workos-inc/authkit-nextjs/components";
 
 export const metadata: Metadata = {
   title: "envpass - Stop pasting secrets in Discord",
@@ -15,9 +16,11 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark">
       <body className="antialiased">
-        <ConvexClientProvider>
-          {children}
-        </ConvexClientProvider>
+        <AuthKitProvider>
+          <ConvexClientProvider>
+            {children}
+          </ConvexClientProvider>
+        </AuthKitProvider>
       </body>
     </html>
   );

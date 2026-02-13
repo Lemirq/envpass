@@ -13,12 +13,28 @@ export const listMyRooms = query({
     const rooms = await Promise.all(
       memberships.map(async (m) => {
         const room = await ctx.db.get(m.roomId);
-        return room ? { ...room, role: m.role } : null;
+        if (!room || room.expiresAt <= Date.now()) return null;
+
+        const secrets = await ctx.db
+          .query("secrets")
+          .withIndex("by_room", (q) => q.eq("roomId", m.roomId))
+          .collect();
+
+        const members = await ctx.db
+          .query("memberships")
+          .withIndex("by_room", (q) => q.eq("roomId", m.roomId))
+          .collect();
+
+        return {
+          ...room,
+          role: m.role,
+          secretCount: secrets.length,
+          memberCount: members.length,
+        };
       })
     );
 
-    // Filter out expired rooms
-    return rooms.filter((r) => r && r.expiresAt > Date.now()).filter(Boolean);
+    return rooms.filter(Boolean);
   },
 });
 

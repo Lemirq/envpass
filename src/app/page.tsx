@@ -1,3 +1,5 @@
+import { Lock, Zap, Radio } from "lucide-react";
+
 export default function Home() {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center p-8">
@@ -11,7 +13,7 @@ export default function Home() {
         <p className="text-lg text-[var(--text-secondary)] max-w-2xl mx-auto">
           The secure way to share secrets at hackathons. Fast, ephemeral, encrypted secret sharing designed for teams that move fast.
         </p>
-        
+
         <div className="flex gap-4 justify-center pt-8">
           <a
             href="/dashboard"
@@ -29,19 +31,25 @@ export default function Home() {
 
         <div className="pt-16 grid grid-cols-1 md:grid-cols-3 gap-8 text-left">
           <div className="p-6 bg-[var(--surface)] rounded-lg border border-[var(--border)]">
-            <h3 className="text-xl font-semibold mb-2 text-[var(--primary)]">🔒 Encrypted</h3>
+            <h3 className="text-xl font-semibold mb-2 text-[var(--primary)] flex items-center gap-2">
+              <Lock className="w-5 h-5" /> Encrypted
+            </h3>
             <p className="text-[var(--text-secondary)]">
               WorkOS Vault encryption with unique keys per secret. Zero plaintext at rest.
             </p>
           </div>
           <div className="p-6 bg-[var(--surface)] rounded-lg border border-[var(--border)]">
-            <h3 className="text-xl font-semibold mb-2 text-[var(--primary)]">⚡ Ephemeral</h3>
+            <h3 className="text-xl font-semibold mb-2 text-[var(--primary)] flex items-center gap-2">
+              <Zap className="w-5 h-5" /> Ephemeral
+            </h3>
             <p className="text-[var(--text-secondary)]">
               Rooms auto-expire after 72 hours. Secrets self-destruct. Nothing permanent.
             </p>
           </div>
           <div className="p-6 bg-[var(--surface)] rounded-lg border border-[var(--border)]">
-            <h3 className="text-xl font-semibold mb-2 text-[var(--primary)]">🚀 Real-time</h3>
+            <h3 className="text-xl font-semibold mb-2 text-[var(--primary)] flex items-center gap-2">
+              <Radio className="w-5 h-5" /> Real-time
+            </h3>
             <p className="text-[var(--text-secondary)]">
               Live updates across your team. No refresh needed. Just works.
             </p>

@@ -31,6 +31,16 @@ export const get = query({
   },
 });
 
+// Get the encrypted value for a specific secret (for client-side decryption)
+export const getEncryptedValue = query({
+  args: { secretId: v.id("secrets") },
+  handler: async (ctx, args) => {
+    const secret = await ctx.db.get(args.secretId);
+    if (!secret) throw new Error("Secret not found");
+    return secret.vaultObjectId;
+  },
+});
+
 // Create a secret
 export const createSecret = mutation({
   args: {

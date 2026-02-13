@@ -1,5 +1,5 @@
 {
-  "extends": "./tsconfig.json",
+  "extends": "../tsconfig.json",
   "compilerOptions": {
     "target": "ES2021",
     "lib": ["ES2021"],
@@ -7,6 +7,6 @@
     "module": "ESNext",
     "moduleResolution": "Bundler"
   },
-  "include": ["convex"],
+  "include": ["."],
   "exclude": []
 }
