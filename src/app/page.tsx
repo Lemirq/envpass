@@ -30,7 +30,7 @@ export default function Home() {
           <div className="text-[0.75rem] uppercase tracking-[0.15em] text-[var(--text-secondary)]" style={{ fontFamily: 'var(--font-pixel)' }}>
             Secure Environment Manager
           </div>
-          <h1 className="text-5xl font-bold tracking-tight" style={{ textShadow: '0 0 20px rgba(255,255,255,0.1)' }}>
+          <h1 className="text-5xl font-bold tracking-tight" style={{ fontFamily: 'var(--font-instrument-serif)', textShadow: '0 0 20px rgba(255,255,255,0.1)' }}>
             envpass
           </h1>
           <p className="text-xl text-[var(--text-secondary)]">
@@ -73,10 +73,10 @@ export default function Home() {
           <div className="p-6 bg-[var(--bg-card)] border border-[var(--border-color)] rounded-xl shadow-[0_4px_24px_rgba(0,0,0,0.3)]">
             <div className="flex items-center gap-2 mb-3">
               <Zap className="w-3.5 h-3.5 text-[var(--accent-green)]" />
-              <h3 className="text-xs uppercase tracking-[0.15em] font-semibold" style={{ fontFamily: 'var(--font-pixel)' }}>Ephemeral</h3>
+              <h3 className="text-xs uppercase tracking-[0.15em] font-semibold" style={{ fontFamily: 'var(--font-pixel)' }}>Instant</h3>
             </div>
             <p className="text-sm text-[var(--text-secondary)] leading-relaxed">
-              Rooms auto-expire after 72 hours. Secrets self-destruct. Nothing permanent.
+              Paste your .env, invite your team, and everyone&apos;s synced in seconds. No setup needed.
             </p>
           </div>
           <div className="p-6 bg-[var(--bg-card)] border border-[var(--border-color)] rounded-xl shadow-[0_4px_24px_rgba(0,0,0,0.3)]">
