@@ -8,6 +8,7 @@ export const listSecrets = query({
     const secrets = await ctx.db
       .query("secrets")
       .withIndex("by_room", (q) => q.eq("roomId", args.roomId))
+      .filter((q) => q.eq(q.field("deletedAt"), undefined))
       .collect();
 
     // Return metadata only — never plaintext values
@@ -16,7 +17,6 @@ export const listSecrets = query({
       keyName: s.keyName,
       description: s.description,
       tags: s.tags,
-      expiresAt: s.expiresAt,
       createdById: s.createdById,
       _creationTime: s._creationTime,
     }));
@@ -36,7 +36,7 @@ export const getEncryptedValue = query({
   args: { secretId: v.id("secrets") },
   handler: async (ctx, args) => {
     const secret = await ctx.db.get(args.secretId);
-    if (!secret) throw new Error("Secret not found");
+    if (!secret || secret.deletedAt) throw new Error("Secret not found");
     return secret.vaultObjectId;
   },
 });
@@ -49,10 +49,19 @@ export const createSecret = mutation({
     vaultObjectId: v.string(),
     description: v.optional(v.string()),
     tags: v.optional(v.array(v.string())),
-    expiresAt: v.optional(v.number()),
     createdById: v.id("users"),
   },
   handler: async (ctx, args) => {
+    // Enforce unique key names per room (ignore soft-deleted)
+    const existing = await ctx.db
+      .query("secrets")
+      .withIndex("by_room_key", (q) => q.eq("roomId", args.roomId).eq("keyName", args.keyName))
+      .filter((q) => q.eq(q.field("deletedAt"), undefined))
+      .first();
+    if (existing) {
+      throw new Error(`Key "${args.keyName}" already exists in this room`);
+    }
+
     const secretId = await ctx.db.insert("secrets", args);
 
     // Audit log
@@ -76,7 +85,7 @@ export const deleteSecret = mutation({
   },
   handler: async (ctx, args) => {
     const secret = await ctx.db.get(args.secretId);
-    if (!secret) {
+    if (!secret || secret.deletedAt) {
       throw new Error("Secret not found");
     }
 
@@ -89,8 +98,9 @@ export const deleteSecret = mutation({
       metadata: { keyName: secret.keyName },
     });
 
-    await ctx.db.delete(args.secretId);
-    
+    // Soft-delete (vault object will be deleted by the client)
+    await ctx.db.patch(args.secretId, { deletedAt: Date.now() });
+
     return secret.vaultObjectId;
   },
 });
@@ -99,23 +109,35 @@ export const deleteSecret = mutation({
 export const updateSecret = mutation({
   args: {
     secretId: v.id("secrets"),
+    keyName: v.optional(v.string()),
     vaultObjectId: v.optional(v.string()),
     description: v.optional(v.string()),
     tags: v.optional(v.array(v.string())),
-    expiresAt: v.optional(v.number()),
     userId: v.id("users"),
   },
   handler: async (ctx, args) => {
     const secret = await ctx.db.get(args.secretId);
-    if (!secret) {
+    if (!secret || secret.deletedAt) {
       throw new Error("Secret not found");
     }
 
-    const updates: any = {};
+    // If renaming, enforce uniqueness
+    if (args.keyName !== undefined && args.keyName !== secret.keyName) {
+      const existing = await ctx.db
+        .query("secrets")
+        .withIndex("by_room_key", (q) => q.eq("roomId", secret.roomId).eq("keyName", args.keyName!))
+        .filter((q) => q.eq(q.field("deletedAt"), undefined))
+        .first();
+      if (existing) {
+        throw new Error(`Key "${args.keyName}" already exists in this room`);
+      }
+    }
+
+    const updates: Record<string, unknown> = {};
+    if (args.keyName !== undefined) updates.keyName = args.keyName;
     if (args.vaultObjectId !== undefined) updates.vaultObjectId = args.vaultObjectId;
     if (args.description !== undefined) updates.description = args.description;
     if (args.tags !== undefined) updates.tags = args.tags;
-    if (args.expiresAt !== undefined) updates.expiresAt = args.expiresAt;
 
     await ctx.db.patch(args.secretId, updates);
 
@@ -125,7 +147,10 @@ export const updateSecret = mutation({
       secretId: args.secretId,
       userId: args.userId,
       action: "SECRET_UPDATED",
-      metadata: { keyName: secret.keyName },
+      metadata: {
+        keyName: args.keyName ?? secret.keyName,
+        ...(args.keyName && args.keyName !== secret.keyName ? { oldKeyName: secret.keyName } : {}),
+      },
     });
 
     return secret.vaultObjectId; // Return old vaultObjectId for cleanup

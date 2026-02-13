@@ -5,14 +5,13 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useMutation } from "convex/react";
 import { api } from "../../../../../convex/_generated/api";
-import { generateInviteCode, getExpirationTimestamp } from "@/lib/utils";
+import { generateInviteCode } from "@/lib/utils";
 import { useCurrentUser } from "@/lib/useCurrentUser";
 import { useAuth } from "@workos-inc/authkit-nextjs/components";
 import { ArrowLeft } from "lucide-react";
 
 export default function CreateRoomPage() {
   const [name, setName] = useState("");
-  const [expiryHours, setExpiryHours] = useState(72);
   const [isCreating, setIsCreating] = useState(false);
   const router = useRouter();
   const { userId } = useCurrentUser();
@@ -29,7 +28,6 @@ export default function CreateRoomPage() {
         name,
         inviteCode: generateInviteCode(),
         workosOrgId: organizationId ?? user.id,
-        expiresAt: getExpirationTimestamp(expiryHours),
         createdById: userId,
       });
       router.push(`/room/${roomId}`);
@@ -87,27 +85,6 @@ export default function CreateRoomPage() {
                     outline-none focus:border-[var(--border-highlight)] transition-colors placeholder:text-[var(--text-dim)]"
                   required
                 />
-              </div>
-
-              <div className="mb-6">
-                <label htmlFor="expiry" className="block text-xs font-medium uppercase tracking-wide text-[var(--text-secondary)] mb-2">
-                  Expires after
-                </label>
-                <select
-                  id="expiry"
-                  value={expiryHours}
-                  onChange={(e) => setExpiryHours(Number(e.target.value))}
-                  className="w-full px-4 py-3 bg-[#111] border border-[var(--border-color)] rounded-lg text-[var(--text-primary)] text-sm
-                    outline-none focus:border-[var(--border-highlight)] transition-colors appearance-none cursor-pointer"
-                >
-                  <option value={24}>24 hours</option>
-                  <option value={48}>48 hours</option>
-                  <option value={72}>72 hours (default)</option>
-                  <option value={168}>1 week</option>
-                </select>
-                <p className="text-[0.65rem] text-[var(--text-dim)] mt-2 font-mono">
-                  Room and all secrets will be permanently deleted after expiry.
-                </p>
               </div>
 
               <button

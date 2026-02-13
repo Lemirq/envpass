@@ -15,12 +15,11 @@ export default defineSchema({
     name: v.string(),
     inviteCode: v.string(),
     workosOrgId: v.string(),
-    expiresAt: v.number(),
     createdById: v.id("users"),
+    status: v.optional(v.union(v.literal("active"), v.literal("deleted"))),
   })
     .index("by_invite_code", ["inviteCode"])
-    .index("by_workos_org", ["workosOrgId"])
-    .index("by_expires", ["expiresAt"]),
+    .index("by_workos_org", ["workosOrgId"]),
 
   memberships: defineTable({
     userId: v.id("users"),
@@ -37,13 +36,12 @@ export default defineSchema({
     vaultObjectId: v.string(),
     description: v.optional(v.string()),
     tags: v.optional(v.array(v.string())),
-    expiresAt: v.optional(v.number()),
     createdById: v.id("users"),
+    deletedAt: v.optional(v.number()),
   })
     .index("by_room", ["roomId"])
     .index("by_room_key", ["roomId", "keyName"])
-    .index("by_vault_object", ["vaultObjectId"])
-    .index("by_expires", ["expiresAt"]),
+    .index("by_vault_object", ["vaultObjectId"]),
 
   auditLogs: defineTable({
     roomId: v.id("rooms"),
@@ -59,6 +57,7 @@ export default defineSchema({
       v.literal("MEMBER_REMOVED"),
       v.literal("ROOM_CREATED"),
       v.literal("ROOM_SETTINGS_UPDATED"),
+      v.literal("ROOM_SHREDDED"),
     ),
     metadata: v.optional(v.any()),
   })

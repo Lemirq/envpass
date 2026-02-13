@@ -6,9 +6,9 @@ import Link from "next/link";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "../../../../../../convex/_generated/api";
 import { Id } from "../../../../../../convex/_generated/dataModel";
-import { formatTimeRemaining, copyToClipboard } from "@/lib/utils";
+import { copyToClipboard } from "@/lib/utils";
 import { useCurrentUser } from "@/lib/useCurrentUser";
-import { ArrowLeft, Copy, Check, Trash2 } from "lucide-react";
+import { ArrowLeft, Copy, Check, Flame } from "lucide-react";
 
 export default function RoomSettingsPage({
   params,
@@ -27,11 +27,11 @@ export default function RoomSettingsPage({
     userId ? { userId, roomId } : "skip"
   );
 
-  const deleteRoom = useMutation(api.rooms.deleteRoom);
+  const shredRoom = useMutation(api.rooms.shredRoom);
   const removeMember = useMutation(api.memberships.removeMember);
 
-  const [confirmDelete, setConfirmDelete] = useState(false);
-  const [isDeleting, setIsDeleting] = useState(false);
+  const [confirmShred, setConfirmShred] = useState(false);
+  const [isShredding, setIsShredding] = useState(false);
   const [copiedCode, setCopiedCode] = useState(false);
 
   const isOwner = membership?.role === "OWNER";
@@ -47,14 +47,26 @@ export default function RoomSettingsPage({
     await removeMember({ membershipId });
   };
 
-  const handleDeleteRoom = async () => {
-    if (!confirmDelete) {
-      setConfirmDelete(true);
+  const handleShredRoom = async () => {
+    if (!confirmShred) {
+      setConfirmShred(true);
       return;
     }
-    setIsDeleting(true);
-    await deleteRoom({ roomId });
-    router.push("/dashboard");
+    if (!userId) return;
+    setIsShredding(true);
+    try {
+      const vaultObjectIds = await shredRoom({ roomId, userId });
+      // Delete all secrets from WorkOS Vault
+      await Promise.allSettled(
+        (vaultObjectIds as string[]).map((id) =>
+          fetch(`/api/vault?id=${encodeURIComponent(id)}`, { method: "DELETE" })
+        )
+      );
+      router.push("/dashboard");
+    } catch {
+      setIsShredding(false);
+      setConfirmShred(false);
+    }
   };
 
   if (room === undefined || members === undefined) {
@@ -70,7 +82,7 @@ export default function RoomSettingsPage({
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <div className="text-xl mb-2" style={{ fontFamily: 'var(--font-pixel)' }}>Room not found</div>
-          <p className="text-sm text-[var(--text-secondary)] mb-6">This room may have expired or been deleted.</p>
+          <p className="text-sm text-[var(--text-secondary)] mb-6">This room may have been shredded or does not exist.</p>
           <Link
             href="/dashboard"
             className="inline-flex items-center justify-center gap-2 h-9 px-4 text-[0.8rem] font-medium uppercase tracking-wide
@@ -147,19 +159,11 @@ export default function RoomSettingsPage({
             <div className="text-[0.75rem] uppercase tracking-[0.15em] text-[var(--text-secondary)] mb-4" style={{ fontFamily: 'var(--font-pixel)' }}>
               Room Details
             </div>
-            <div className="space-y-3">
-              <div className="flex justify-between items-center">
-                <span className="text-xs text-[var(--text-secondary)] uppercase">Expires in</span>
-                <span className="text-sm font-mono text-[var(--accent-green)]" style={{ textShadow: '0 0 8px var(--accent-glow-green)' }}>
-                  {formatTimeRemaining(room.expiresAt)}
-                </span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-xs text-[var(--text-secondary)] uppercase">Your role</span>
-                <span className="text-xs font-mono px-2 py-0.5 rounded bg-[#1a1a1a] border border-[var(--border-color)]">
-                  {membership?.role ?? "MEMBER"}
-                </span>
-              </div>
+            <div className="flex justify-between items-center">
+              <span className="text-xs text-[var(--text-secondary)] uppercase">Your role</span>
+              <span className="text-xs font-mono px-2 py-0.5 rounded bg-[#1a1a1a] border border-[var(--border-color)]">
+                {membership?.role ?? "MEMBER"}
+              </span>
             </div>
           </section>
 
@@ -177,9 +181,17 @@ export default function RoomSettingsPage({
                   className="flex items-center justify-between px-6 py-3 border-t border-[rgba(255,255,255,0.03)] hover:bg-[var(--bg-card-hover)] transition-colors"
                 >
                   <div className="flex items-center gap-3">
-                    <div className="w-7 h-7 rounded-full bg-[#1a1a1a] border border-[var(--border-color)] flex items-center justify-center text-xs font-mono text-[var(--text-secondary)]">
-                      {(member!.displayName ?? member!.email)?.[0]?.toUpperCase() ?? "?"}
-                    </div>
+                    {member!.avatarUrl ? (
+                      <img
+                        src={member!.avatarUrl}
+                        alt={member!.displayName ?? member!.email}
+                        className="w-7 h-7 rounded-full border border-[var(--border-color)] object-cover"
+                      />
+                    ) : (
+                      <div className="w-7 h-7 rounded-full bg-[#1a1a1a] border border-[var(--border-color)] flex items-center justify-center text-xs font-mono text-[var(--text-secondary)]">
+                        {(member!.displayName ?? member!.email)?.[0]?.toUpperCase() ?? "?"}
+                      </div>
+                    )}
                     <div>
                       <p className="text-sm font-medium">{member!.displayName ?? member!.email}</p>
                       <p className="text-[0.65rem] text-[var(--text-dim)] font-mono">{member!.email}</p>
@@ -207,32 +219,32 @@ export default function RoomSettingsPage({
             </div>
           </section>
 
-          {/* Danger Zone */}
+          {/* Shred Zone */}
           {isOwner && (
             <section className="p-6 bg-[var(--bg-card)] rounded-xl border border-[var(--accent-red)]/20 shadow-[0_4px_24px_rgba(0,0,0,0.3)]">
               <div className="text-[0.75rem] uppercase tracking-[0.15em] text-[var(--accent-red)] mb-3" style={{ fontFamily: 'var(--font-pixel)' }}>
                 Danger Zone
               </div>
               <p className="text-xs text-[var(--text-secondary)] mb-4 font-mono">
-                Permanently delete this room and all its secrets. This cannot be undone.
+                Shred this room. All secrets will be permanently deleted from WorkOS Vault and the room will be removed.
               </p>
               <div className="flex gap-2">
                 <button
-                  onClick={handleDeleteRoom}
-                  disabled={isDeleting}
+                  onClick={handleShredRoom}
+                  disabled={isShredding}
                   className={`inline-flex items-center justify-center gap-2 h-9 px-4 text-[0.8rem] font-medium uppercase tracking-wide rounded-lg
                     transition-all duration-200 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed
-                    ${confirmDelete
+                    ${confirmShred
                       ? "bg-[var(--accent-red)] text-white border border-[var(--accent-red)] hover:brightness-110"
                       : "bg-gradient-to-b from-[#1f1f1f] to-[#0f0f0f] border border-[var(--border-highlight)] text-[var(--accent-red)] shadow-[inset_0_1px_0_rgba(255,255,255,0.08),0_2px_4px_rgba(0,0,0,0.4)] hover:border-[var(--accent-red)]/50 hover:-translate-y-px active:translate-y-px"
                     }`}
                 >
-                  <Trash2 className="w-3 h-3" />
-                  {isDeleting ? "Deleting..." : confirmDelete ? "Confirm Delete" : "Delete Room"}
+                  <Flame className="w-3 h-3" />
+                  {isShredding ? "Shredding..." : confirmShred ? "Confirm Shred" : "Shred Room"}
                 </button>
-                {confirmDelete && !isDeleting && (
+                {confirmShred && !isShredding && (
                   <button
-                    onClick={() => setConfirmDelete(false)}
+                    onClick={() => setConfirmShred(false)}
                     className="inline-flex items-center justify-center h-9 px-4 text-[0.8rem] font-medium uppercase tracking-wide
                       bg-gradient-to-b from-[#1f1f1f] to-[#0f0f0f] border border-[var(--border-highlight)] rounded-lg text-[var(--text-secondary)]
                       shadow-[inset_0_1px_0_rgba(255,255,255,0.08),0_2px_4px_rgba(0,0,0,0.4)]

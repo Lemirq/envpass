@@ -54,7 +54,6 @@ NEXT_PUBLIC_CONVEX_SITE_URL=https://your-deployment.convex.site
 WORKOS_CLIENT_ID=client_...
 WORKOS_API_KEY=sk_test_...
 WORKOS_COOKIE_PASSWORD=<64-char hex string>
-NEXT_PUBLIC_WORKOS_REDIRECT_URI=http://localhost:3000/api/auth/callback
 
 # Next.js
 NEXT_PUBLIC_APP_URL=http://localhost:3000

@@ -3,9 +3,8 @@
 import Link from "next/link";
 import { useQuery } from "convex/react";
 import { api } from "../../../../convex/_generated/api";
-import { formatTimeRemaining } from "@/lib/utils";
 import { useCurrentUser } from "@/lib/useCurrentUser";
-import { KeyRound, Users, LogOut, Plus, Clock } from "lucide-react";
+import { KeyRound, Users, LogOut, Plus } from "lucide-react";
 import { useAuth } from "@workos-inc/authkit-nextjs/components";
 
 export default function DashboardPage() {
@@ -19,7 +18,7 @@ export default function DashboardPage() {
   const isLoading = userLoading || rooms === undefined;
 
   return (
-    <div className="min-h-screen flex flex-col overflow-hidden">
+    <div className="h-screen flex flex-col overflow-hidden">
       {/* Header */}
       <header className="h-16 border-b border-[var(--border-color)] flex items-center justify-between px-6 bg-[rgba(5,5,5,0.8)] backdrop-blur-sm z-10 shrink-0">
         <div className="flex items-center gap-3">
@@ -97,19 +96,18 @@ export default function DashboardPage() {
           ) : rooms && rooms.length > 0 ? (
             <div className="border border-[var(--border-color)] rounded-xl bg-[var(--bg-card)] overflow-hidden shadow-[0_4px_24px_rgba(0,0,0,0.3)]">
               {/* Table header */}
-              <div className="grid grid-cols-[2fr_1fr_1fr_1fr_1fr] px-5 py-3 border-b border-[var(--border-color)] bg-[rgba(255,255,255,0.02)]">
+              <div className="grid grid-cols-[2fr_1fr_1fr_1fr] px-5 py-3 border-b border-[var(--border-color)] bg-[rgba(255,255,255,0.02)]">
                 <div className="text-[0.65rem] uppercase tracking-[0.15em] text-[var(--text-secondary)] font-semibold">Room</div>
                 <div className="text-[0.65rem] uppercase tracking-[0.15em] text-[var(--text-secondary)] font-semibold">Code</div>
                 <div className="text-[0.65rem] uppercase tracking-[0.15em] text-[var(--text-secondary)] font-semibold">Secrets</div>
                 <div className="text-[0.65rem] uppercase tracking-[0.15em] text-[var(--text-secondary)] font-semibold">Members</div>
-                <div className="text-[0.65rem] uppercase tracking-[0.15em] text-[var(--text-secondary)] font-semibold text-right">TTL</div>
               </div>
 
               {rooms.map((room) => (
                 <Link
                   key={room!._id}
                   href={`/room/${room!._id}`}
-                  className="grid grid-cols-[2fr_1fr_1fr_1fr_1fr] px-5 py-4 items-center border-b border-[rgba(255,255,255,0.03)] last:border-b-0
+                  className="grid grid-cols-[2fr_1fr_1fr_1fr] px-5 py-4 items-center border-b border-[rgba(255,255,255,0.03)] last:border-b-0
                     hover:bg-[var(--bg-card-hover)] transition-colors duration-150 no-underline text-[var(--text-primary)]"
                 >
                   <div className="flex items-center gap-3">
@@ -127,9 +125,6 @@ export default function DashboardPage() {
                   </div>
                   <div className="flex items-center gap-1.5 text-sm text-[var(--text-secondary)]">
                     <Users className="w-3 h-3" /> {room!.memberCount}
-                  </div>
-                  <div className="text-right font-mono text-sm text-[var(--accent-green)]" style={{ textShadow: '0 0 8px var(--accent-glow-green)' }}>
-                    {formatTimeRemaining(room!.expiresAt)}
                   </div>
                 </Link>
               ))}

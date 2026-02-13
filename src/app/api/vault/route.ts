@@ -11,8 +11,10 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "name and value are required" }, { status: 400 });
     }
 
+    // Append random suffix to name to ensure uniqueness in Vault
+    const uniqueName = `${name}_${crypto.randomUUID().slice(0, 8)}`;
     const metadata = await workos.vault.createObject({
-      name,
+      name: uniqueName,
       value,
       context: { app: "envpass" },
     });

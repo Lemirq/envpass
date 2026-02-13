@@ -36,12 +36,6 @@ export default function JoinRoomPage() {
         return;
       }
 
-      if (room.expiresAt <= Date.now()) {
-        setError("This room has expired.");
-        setIsJoining(false);
-        return;
-      }
-
       await addMember({
         userId,
         roomId: room._id,
