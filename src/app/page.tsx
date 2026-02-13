@@ -1,56 +1,90 @@
-import { Lock, Zap, Radio } from "lucide-react";
+import { Lock, Zap, Radio, ArrowRight } from "lucide-react";
 
 export default function Home() {
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center p-8">
-      <div className="max-w-4xl mx-auto text-center space-y-8">
-        <h1 className="text-6xl font-bold tracking-tight">
-          envpass
-        </h1>
-        <p className="text-2xl text-[var(--text-secondary)]">
-          Stop pasting secrets in Discord.
-        </p>
-        <p className="text-lg text-[var(--text-secondary)] max-w-2xl mx-auto">
-          The secure way to share secrets at hackathons. Fast, ephemeral, encrypted secret sharing designed for teams that move fast.
-        </p>
+    <div className="min-h-screen flex flex-col">
+      {/* Header */}
+      <header className="h-16 border-b border-[var(--border-color)] flex items-center justify-between px-6 bg-[rgba(5,5,5,0.8)] backdrop-blur-sm z-10">
+        <div className="flex items-center gap-3">
+          <div className="font-bold text-lg tracking-tight">envpass</div>
+          <div className="text-[0.7rem] text-[var(--text-secondary)] mt-0.5 uppercase" style={{ fontFamily: 'var(--font-pixel)' }}>
+            <span className="text-white" style={{ textShadow: '0 0 10px rgba(255,255,255,0.3)' }}>Secure Workspace</span>
+          </div>
+        </div>
+        <a
+          href="/dashboard"
+          className="inline-flex items-center justify-center gap-2 h-9 px-4 text-[0.8rem] font-medium uppercase tracking-wide
+            bg-gradient-to-b from-[#2a2a2a] to-[#151515] border border-[#444] rounded-lg text-[var(--text-primary)]
+            shadow-[inset_0_1px_0_rgba(255,255,255,0.08),0_2px_4px_rgba(0,0,0,0.4)]
+            hover:border-[#555] hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.12),0_4px_8px_rgba(0,0,0,0.5)] hover:-translate-y-px
+            active:translate-y-px active:shadow-[inset_0_2px_4px_rgba(0,0,0,0.4)] active:bg-[#0f0f0f]
+            transition-all duration-200 no-underline"
+        >
+          Sign In <ArrowRight className="w-3.5 h-3.5" />
+        </a>
+      </header>
 
-        <div className="flex gap-4 justify-center pt-8">
-          <a
-            href="/dashboard"
-            className="px-8 py-4 bg-[var(--primary)] hover:bg-[var(--primary-dark)] text-white rounded-lg font-semibold transition-colors"
-          >
-            Create Room
-          </a>
-          <a
-            href="/join"
-            className="px-8 py-4 bg-[var(--surface)] hover:bg-[var(--surface-light)] text-[var(--text-primary)] rounded-lg font-semibold border border-[var(--border)] transition-colors"
-          >
-            Join Room
-          </a>
+      {/* Hero */}
+      <div className="flex-1 flex flex-col items-center justify-center p-8">
+        <div className="max-w-3xl mx-auto text-center space-y-6">
+          <div className="text-[0.75rem] uppercase tracking-[0.15em] text-[var(--text-secondary)]" style={{ fontFamily: 'var(--font-pixel)' }}>
+            Secure Environment Manager
+          </div>
+          <h1 className="text-5xl font-bold tracking-tight" style={{ textShadow: '0 0 20px rgba(255,255,255,0.1)' }}>
+            envpass
+          </h1>
+          <p className="text-xl text-[var(--text-secondary)]">
+            Stop pasting secrets in Discord.
+          </p>
+          <p className="text-sm text-[var(--text-dim)] font-mono max-w-xl mx-auto">
+            The secure way to share secrets at hackathons. Fast, ephemeral, encrypted secret sharing designed for teams that move fast.
+          </p>
+
+          <div className="flex gap-3 justify-center pt-6">
+            <a
+              href="/dashboard"
+              className="inline-flex items-center justify-center gap-2 h-11 px-8 text-[0.85rem] font-medium uppercase tracking-wide
+                bg-gradient-to-b from-[#2a2a2a] to-[#151515] border border-[#444] rounded-lg text-[var(--text-primary)]
+                shadow-[inset_0_1px_0_rgba(255,255,255,0.08),0_2px_4px_rgba(0,0,0,0.4)]
+                hover:border-[#555] hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.12),0_4px_8px_rgba(0,0,0,0.5)] hover:-translate-y-px
+                active:translate-y-px active:shadow-[inset_0_2px_4px_rgba(0,0,0,0.4)] active:bg-[#0f0f0f]
+                transition-all duration-200 no-underline"
+            >
+              Get Started
+            </a>
+          </div>
+
+          <p className="text-xs text-[var(--text-dim)] font-mono">
+            Sign in with WorkOS to create or join a room
+          </p>
         </div>
 
-        <div className="pt-16 grid grid-cols-1 md:grid-cols-3 gap-8 text-left">
-          <div className="p-6 bg-[var(--surface)] rounded-lg border border-[var(--border)]">
-            <h3 className="text-xl font-semibold mb-2 text-[var(--primary)] flex items-center gap-2">
-              <Lock className="w-5 h-5" /> Encrypted
-            </h3>
-            <p className="text-[var(--text-secondary)]">
+        {/* Features */}
+        <div className="max-w-4xl mx-auto mt-20 grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="p-6 bg-[var(--bg-card)] border border-[var(--border-color)] rounded-xl shadow-[0_4px_24px_rgba(0,0,0,0.3)]">
+            <div className="flex items-center gap-2 mb-3">
+              <Lock className="w-3.5 h-3.5 text-[var(--accent-green)]" />
+              <h3 className="text-xs uppercase tracking-[0.15em] font-semibold" style={{ fontFamily: 'var(--font-pixel)' }}>Encrypted</h3>
+            </div>
+            <p className="text-sm text-[var(--text-secondary)] leading-relaxed">
               WorkOS Vault encryption with unique keys per secret. Zero plaintext at rest.
             </p>
           </div>
-          <div className="p-6 bg-[var(--surface)] rounded-lg border border-[var(--border)]">
-            <h3 className="text-xl font-semibold mb-2 text-[var(--primary)] flex items-center gap-2">
-              <Zap className="w-5 h-5" /> Ephemeral
-            </h3>
-            <p className="text-[var(--text-secondary)]">
+          <div className="p-6 bg-[var(--bg-card)] border border-[var(--border-color)] rounded-xl shadow-[0_4px_24px_rgba(0,0,0,0.3)]">
+            <div className="flex items-center gap-2 mb-3">
+              <Zap className="w-3.5 h-3.5 text-[var(--accent-green)]" />
+              <h3 className="text-xs uppercase tracking-[0.15em] font-semibold" style={{ fontFamily: 'var(--font-pixel)' }}>Ephemeral</h3>
+            </div>
+            <p className="text-sm text-[var(--text-secondary)] leading-relaxed">
               Rooms auto-expire after 72 hours. Secrets self-destruct. Nothing permanent.
             </p>
           </div>
-          <div className="p-6 bg-[var(--surface)] rounded-lg border border-[var(--border)]">
-            <h3 className="text-xl font-semibold mb-2 text-[var(--primary)] flex items-center gap-2">
-              <Radio className="w-5 h-5" /> Real-time
-            </h3>
-            <p className="text-[var(--text-secondary)]">
+          <div className="p-6 bg-[var(--bg-card)] border border-[var(--border-color)] rounded-xl shadow-[0_4px_24px_rgba(0,0,0,0.3)]">
+            <div className="flex items-center gap-2 mb-3">
+              <Radio className="w-3.5 h-3.5 text-[var(--accent-green)]" />
+              <h3 className="text-xs uppercase tracking-[0.15em] font-semibold" style={{ fontFamily: 'var(--font-pixel)' }}>Real-time</h3>
+            </div>
+            <p className="text-sm text-[var(--text-secondary)] leading-relaxed">
               Live updates across your team. No refresh needed. Just works.
             </p>
           </div>
