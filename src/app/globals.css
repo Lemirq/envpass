@@ -1,0 +1,33 @@
+@import "tailwindcss";
+
+:root {
+  /* envpass design system colors */
+  --primary: #10B981;
+  --primary-dark: #059669;
+  --primary-glow: rgba(16, 185, 129, 0.2);
+  --background: #0A0E0F;
+  --surface: #111819;
+  --surface-light: #1A2324;
+  --border: #1E2E2F;
+  --text-primary: #E8EEEC;
+  --text-secondary: #6B8A85;
+  --success: #34D399;
+  --warning: #FBBF24;
+  --danger: #EF4444;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--text-primary);
+  --color-primary: var(--primary);
+  --color-surface: var(--surface);
+  --color-border: var(--border);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+body {
+  background: var(--background);
+  color: var(--text-primary);
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
+}
