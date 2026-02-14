@@ -14,7 +14,7 @@ export const metadata: Metadata = {
   description:
     "The secure way to share secrets at hackathons. Create a room, invite your team, and share encrypted environment variables in real-time. Zero plaintext at rest.",
   metadataBase: new URL(
-    process.env.NEXT_PUBLIC_APP_URL || "https://envpass.dev",
+    process.env.NEXT_PUBLIC_APP_URL || "https://envpass.vhaan.me",
   ),
   openGraph: {
     title: "envpass — stop pasting secrets in Discord",
