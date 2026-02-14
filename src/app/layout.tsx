@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Instrument_Serif } from "next/font/google";
+import Script from "next/script";
 import "./globals.css";
 
 const instrumentSerif = Instrument_Serif({
@@ -63,6 +64,14 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="dark">
+      <head>
+        <Script
+          src="https://datafa.st/js/script.js"
+          data-website-id="dfid_oeifXKR9iuHOvEDcvcGOc"
+          data-domain="envpass.vhaan.me"
+          strategy="afterInteractive"
+        />
+      </head>
       <body className={`antialiased ${instrumentSerif.variable}`}>
         {children}
       </body>
