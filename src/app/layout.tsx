@@ -9,14 +9,14 @@ const instrumentSerif = Instrument_Serif({
 });
 
 export const metadata: Metadata = {
-  title: "envpass — Stop pasting secrets in Discord",
+  title: "envpass — stop pasting secrets in Discord",
   description:
     "The secure way to share secrets at hackathons. Create a room, invite your team, and share encrypted environment variables in real-time. Zero plaintext at rest.",
   metadataBase: new URL(
-    process.env.NEXT_PUBLIC_APP_URL || "https://envpass.dev"
+    process.env.NEXT_PUBLIC_APP_URL || "https://envpass.dev",
   ),
   openGraph: {
-    title: "envpass — Stop pasting secrets in Discord",
+    title: "envpass — stop pasting secrets in Discord",
     description:
       "Fast, ephemeral, encrypted secret sharing for hackathon teams. WorkOS Vault encryption, real-time sync, and copy-to-clipboard with auto-clear.",
     url: "/",
@@ -34,7 +34,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "envpass — Stop pasting secrets in Discord",
+    title: "envpass — stop pasting secrets in Discord",
     description:
       "Fast, ephemeral, encrypted secret sharing for hackathon teams. Zero plaintext at rest.",
     images: ["/og.jpg"],
