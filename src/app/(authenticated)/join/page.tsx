@@ -41,7 +41,7 @@ export default function JoinRoomPage() {
         roomId: room._id,
         role: "MEMBER",
       });
-
+      window?.datafast?.("join_room");
       router.push(`/room/${room._id}`);
     } catch {
       setError("Failed to join room. You may already be a member.");

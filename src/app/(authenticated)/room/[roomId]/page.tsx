@@ -63,6 +63,7 @@ export default function RoomPage({ params }: { params: Promise<{ roomId: string 
       const data = await res.json();
       if (!res.ok) throw new Error(data.error);
       await copyToClipboard(data.value);
+      window?.datafast?.("copy_secret");
       setCopiedId(secretId);
       setTimeout(() => setCopiedId(null), 2000);
     } catch (err) {
@@ -123,6 +124,7 @@ export default function RoomPage({ params }: { params: Promise<{ roomId: string 
         }
       }
       await copyToClipboard(lines.join("\n"));
+      window?.datafast?.("copy_env", { secret_count: String(lines.length) });
       setCopiedEnv(true);
       setTimeout(() => setCopiedEnv(false), 2000);
     } catch (err) {
@@ -178,6 +180,7 @@ export default function RoomPage({ params }: { params: Promise<{ roomId: string 
         await createSecret({ roomId, keyName: key, vaultObjectId, createdById: userId });
         setBulkProgress(`${i + 1} / ${entries.length}`);
       }
+      window?.datafast?.("import_secrets", { secret_count: String(entries.length) });
       setShowAddSecret(false);
       setBulkEnv("");
       setBulkProgress("");
@@ -247,6 +250,7 @@ export default function RoomPage({ params }: { params: Promise<{ roomId: string 
           fetch(`/api/vault?id=${encodeURIComponent(id)}`, { method: "DELETE" })
         )
       );
+      window?.datafast?.("shred_room");
       router.push("/dashboard");
     } catch {
       setIsShredding(false);

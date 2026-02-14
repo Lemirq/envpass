@@ -65,6 +65,15 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark">
       <head>
+        <script
+          id="datafast-queue"
+          dangerouslySetInnerHTML={{
+            __html: `window.datafast = window.datafast || function() {
+              window.datafast.q = window.datafast.q || [];
+              window.datafast.q.push(arguments);
+            };`,
+          }}
+        />
         <Script
           src="https://datafa.st/js/script.js"
           data-website-id="dfid_oeifXKR9iuHOvEDcvcGOc"

@@ -30,6 +30,7 @@ export default function CreateRoomPage() {
         workosOrgId: organizationId ?? user.id,
         createdById: userId,
       });
+      window?.datafast?.("create_room");
       router.push(`/room/${roomId}`);
     } catch {
       setIsCreating(false);
