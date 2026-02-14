@@ -1,4 +1,4 @@
-import { Lock, Zap, Radio, ArrowRight } from "lucide-react";
+import { Lock, Zap, Radio, ArrowRight, Github } from "lucide-react";
 
 export default function Home() {
   return (
@@ -11,17 +11,31 @@ export default function Home() {
             <span className="text-white" style={{ textShadow: '0 0 10px rgba(255,255,255,0.3)' }}>Secure Workspace</span>
           </div>
         </div>
-        <a
-          href="/dashboard"
-          className="inline-flex items-center justify-center gap-2 h-9 px-4 text-[0.8rem] font-medium uppercase tracking-wide
-            bg-gradient-to-b from-[#2a2a2a] to-[#151515] border border-[#444] rounded-lg text-[var(--text-primary)]
-            shadow-[inset_0_1px_0_rgba(255,255,255,0.08),0_2px_4px_rgba(0,0,0,0.4)]
-            hover:border-[#555] hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.12),0_4px_8px_rgba(0,0,0,0.5)] hover:-translate-y-px
-            active:translate-y-px active:shadow-[inset_0_2px_4px_rgba(0,0,0,0.4)] active:bg-[#0f0f0f]
-            transition-all duration-200 no-underline"
-        >
-          Sign In <ArrowRight className="w-3.5 h-3.5" />
-        </a>
+        <div className="flex items-center gap-3">
+          <a
+            href="https://github.com/Lemirq/envpass"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center justify-center gap-2 h-9 px-4 text-[0.8rem] font-medium uppercase tracking-wide
+              bg-gradient-to-b from-[#1f1f1f] to-[#0f0f0f] border border-[var(--border-highlight)] rounded-lg text-[var(--text-secondary)]
+              shadow-[inset_0_1px_0_rgba(255,255,255,0.08),0_2px_4px_rgba(0,0,0,0.4)]
+              hover:border-[#555] hover:text-[var(--text-primary)] hover:-translate-y-px
+              active:translate-y-px transition-all duration-200 no-underline"
+          >
+            <Github className="w-3.5 h-3.5" /> Source
+          </a>
+          <a
+            href="/dashboard"
+            className="inline-flex items-center justify-center gap-2 h-9 px-4 text-[0.8rem] font-medium uppercase tracking-wide
+              bg-gradient-to-b from-[#2a2a2a] to-[#151515] border border-[#444] rounded-lg text-[var(--text-primary)]
+              shadow-[inset_0_1px_0_rgba(255,255,255,0.08),0_2px_4px_rgba(0,0,0,0.4)]
+              hover:border-[#555] hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.12),0_4px_8px_rgba(0,0,0,0.5)] hover:-translate-y-px
+              active:translate-y-px active:shadow-[inset_0_2px_4px_rgba(0,0,0,0.4)] active:bg-[#0f0f0f]
+              transition-all duration-200 no-underline"
+          >
+            Sign In <ArrowRight className="w-3.5 h-3.5" />
+          </a>
+        </div>
       </header>
 
       {/* Hero */}
@@ -40,7 +54,29 @@ export default function Home() {
             The secure way to share secrets at hackathons. Fast, ephemeral, encrypted secret sharing designed for teams that move fast.
           </p>
 
-          <div className="flex gap-3 justify-center pt-6">
+          {/* Open Source Trust Banner */}
+          <a
+            href="https://github.com/Lemirq/envpass"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-3 mx-auto mt-2 px-5 py-3 rounded-xl
+              border border-[var(--accent-green)]/30 bg-[var(--accent-green)]/[0.04]
+              hover:border-[var(--accent-green)]/50 hover:bg-[var(--accent-green)]/[0.07]
+              transition-all duration-200 no-underline group"
+          >
+            <Github className="w-5 h-5 text-[var(--accent-green)] shrink-0" />
+            <div className="text-left">
+              <div className="text-sm font-semibold text-[var(--text-primary)]">
+                100% open source
+              </div>
+              <div className="text-xs text-[var(--text-secondary)]">
+                Every line of code is public. Verify we never touch your keys.
+              </div>
+            </div>
+            <ArrowRight className="w-4 h-4 text-[var(--text-dim)] group-hover:text-[var(--accent-green)] transition-colors shrink-0" />
+          </a>
+
+          <div className="flex gap-3 justify-center pt-4">
             <a
               href="/dashboard"
               className="inline-flex items-center justify-center gap-2 h-11 px-8 text-[0.85rem] font-medium uppercase tracking-wide
