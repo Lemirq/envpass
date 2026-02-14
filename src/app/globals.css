@@ -1,59 +1,59 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Silkscreen&family=JetBrains+Mono:wght@400;500&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Silkscreen&family=JetBrains+Mono:wght@400;500&display=swap");
 @import "tailwindcss";
 
 :root {
-    --bg-body: #050505;
-    --bg-card: #0a0a0a;
-    --bg-card-hover: #111111;
-    --border-color: #222222;
-    --border-highlight: #333333;
+  --bg-body: #050505;
+  --bg-card: #0a0a0a;
+  --bg-card-hover: #111111;
+  --border-color: #222222;
+  --border-highlight: #333333;
 
-    --text-primary: #ffffff;
-    --text-secondary: #888888;
-    --text-dim: #444444;
+  --text-primary: #ffffff;
+  --text-secondary: #888888;
+  --text-dim: #767676;
 
-    --accent-green: #4ade80;
-    --accent-red: #f87171;
-    --accent-glow-green: rgba(74, 222, 128, 0.4);
-    --accent-glow-red: rgba(248, 113, 113, 0.4);
+  --accent-green: #4ade80;
+  --accent-red: #f87171;
+  --accent-glow-green: rgba(74, 222, 128, 0.4);
+  --accent-glow-red: rgba(248, 113, 113, 0.4);
 
-    --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
-    --font-mono: 'JetBrains Mono', monospace;
-    --font-pixel: 'Silkscreen', cursive;
+  --font-sans: "Inter", system-ui, -apple-system, sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
+  --font-pixel: "Silkscreen", cursive;
 
-    --radius-sm: 4px;
-    --radius-md: 8px;
-    --radius-lg: 12px;
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
 }
 
 @theme inline {
-    --color-background: var(--bg-body);
-    --color-foreground: var(--text-primary);
-    --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
-    --font-mono: 'JetBrains Mono', monospace;
+  --color-background: var(--bg-body);
+  --color-foreground: var(--text-primary);
+  --font-sans: "Inter", system-ui, -apple-system, sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
 }
 
 * {
-    box-sizing: border-box;
+  box-sizing: border-box;
 }
 
 body {
-    background-color: var(--bg-body);
-    color: var(--text-primary);
-    font-family: var(--font-sans);
-    -webkit-font-smoothing: antialiased;
+  background-color: var(--bg-body);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
 }
 
 ::-webkit-scrollbar {
-    width: 6px;
+  width: 6px;
 }
 ::-webkit-scrollbar-track {
-    background: transparent;
+  background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-    background: #222;
-    border-radius: 3px;
+  background: #222;
+  border-radius: 3px;
 }
 ::-webkit-scrollbar-thumb:hover {
-    background: #333;
+  background: #333;
 }
